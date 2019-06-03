@@ -38,8 +38,11 @@ ga <- function(popSize = 1000, # population size
   }
   
   population <- centers_init(popSize)
+  runs <- 0
+  bestSol <- 0
+  bestFitVal <- 0
 
-  for(i in seq_len(popSize)){
+  for(i in seq_len(maxIter)){
 
     stime <- system.time({
 
@@ -52,9 +55,19 @@ ga <- function(popSize = 1000, # population size
     print(stime[3])
     print(fitness)
     
-    
     # check end conditions
-    # TODO
+    newBestFitVal <- max(fitness)
+    if(newBestFitVal > bestFitVal){
+      bestFitVal <- newBestFitVal
+      bestSol <- population[which.max(fitness)]
+      runs <- 0
+    } else {
+      runs <- runs + 1
+    }
+    
+    if(runs > run){
+      break
+    }
     
     # selection
     newPopulation <- selection(population, fitness)
@@ -87,7 +100,7 @@ ga <- function(popSize = 1000, # population size
     }
     
     # update population
-    popultaion <- newPopulation
+    population <- newPopulation
     popSize <- length(newPopulation)
   }
 }
