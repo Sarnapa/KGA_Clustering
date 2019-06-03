@@ -3,13 +3,16 @@ library(mlbench)
 source("datasets.R")
 source("k_means.R")
 source("ga.R")
-source("centers_init.R")
+source("pop_init.R")
 
-#currentDataset <- datasets()$IRIS
-#centers <- initCenters(currentDataset, 5)
-#kMeans(currentDataset, centers)
+#currentDataset <- datasets()$LETTER_RECOGNITION
+#currentMaxCentersCount = 150
+#individual <- initIndividual(dataset = currentDataset, centersCount = 26)
+#kMeans(dataset = currentDataset, centers = individual, maxIter = 1)
+#initPop(dataset = currentDataset, popSize = 5, maxCentersCount = 5)
 
 GA <- ga(popSize = 50,
          maxiter = 1000,
-         run = 50
+         run = 50,
+         maxCentersCount = currentMaxCentersCount
 )

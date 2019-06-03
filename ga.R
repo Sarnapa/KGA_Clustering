@@ -2,7 +2,7 @@ library(foreach)
 library(doParallel)
 
 source("fitness_fun.R")
-source("centers_init.R")
+source("pop_init.R")
 source("selection.R")
 source("mutation.R")
 source("crossover.R")
@@ -15,8 +15,7 @@ ga <- function(popSize = 1000, # population size
                parallel = TRUE,
                cores = 4) 
 {
-  
-  if(parallel == TRUE){
+  if(parallel == TRUE) {
     registerDoParallel(cores)
     
     # testing parallel efficiency
