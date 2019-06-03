@@ -85,5 +85,9 @@ ga <- function(popSize = 1000, # population size
         newPopulation[i] <- mutation(newPopulation[i])
       }
     }
+    
+    # update population
+    popultaion <- newPopulation
+    popSize <- length(newPopulation)
   }
 }
