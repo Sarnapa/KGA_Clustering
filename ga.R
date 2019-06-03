@@ -43,16 +43,21 @@ ga <- function(popSize = 1000, # population size
   bestFitVal <- 0
 
   for(i in seq_len(maxIter)){
-
-    stime <- system.time({
-
-      fitness <- foreach (j=0:popSize, .combine=c) %dopar% {
-        fitness_fun(population[j])
-      }
-
-    })
     
-    print(stime[3])
+    if(parallel)
+    {
+      stime <- system.time({
+  
+        fitness <- foreach (j=0:popSize, .combine=c) %dopar% {
+          fitness_fun(population[j])
+        }
+      })
+      
+      print(stime[3])
+    } else {
+      fitness <- foreach (j=0:popSize, .combine=c) %do% {
+        fitness_fun(population[j])
+    }
     print(fitness)
     
     # check end conditions
