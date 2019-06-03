@@ -7,7 +7,7 @@ source("ga.R")
 
 #kMeans(datasetEnum()$LETTER_RECOGNITION, NULL)
 
-GA <- ga(popSize = 50, # population size
-         maxiter = 1000, # max ga iterations number
-         run = 50 # max number of generations without fitness function improvement
+GA <- ga(popSize = 50,
+         maxiter = 1000,
+         run = 50 
          )
