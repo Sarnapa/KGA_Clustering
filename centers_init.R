@@ -1,0 +1,3 @@
+centers_init <- function(){
+  centers <- c(c(1,2), c(2,3))
+}
