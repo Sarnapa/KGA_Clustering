@@ -7,7 +7,8 @@ source("selection.R")
 source("mutation.R")
 source("crossover.R")
 
-ga <- function(popSize = 1000, # population size
+ga <- function(dataset,
+               popSize = 100, # population size
                pCrossover = 0.8, # crossover probability
                pMutation = 0.1, # mutation probability
                maxIter = 100,  # max ga iterations number
@@ -16,28 +17,57 @@ ga <- function(popSize = 1000, # population size
                cores = 4) 
 {
   
-  if(parallel == TRUE){
-    registerDoParallel(cores)
-    
-    # testing parallel efficiency
-    # x <- iris[which(iris[,5] != "setosa"), c(1,5)]
-    # trials <- 10000
-    # 
-    # 
-    # stime <- system.time({
-    #   res <- foreach(icount(trials), .combine=cbind) %do% {
-    #     ind <- sample(100, 100, replace=TRUE)
-    #     result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
-    #     coefficients(result1)
-    #   }
-    # })
-    
-    #print(stime[3])
-    #print(res)
-    
+  # passing dataset not working
+  
+  # TMPvec
+  # dataset <- datasets()$IRIS
+  # 
+  # # dataset settings
+  # datasetId = dataset$id
+  # datasetAttrsCount = dataset$attrsCount
+  # datasetFirstAttrIdx = dataset$firstAttrIdx
+  # datasetLastAttrIdx = dataset$lastAttrIdx
+  # 
+  # if (datasetId == datasets()$IRIS$id) {
+  #   if(!exists("iris"))
+  #     data(iris)
+  # }
+  # else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
+  #   if(!exists("LetterRecognition"))
+  #     data(LetterRecognition)
+  # }
+  
+  # for testing
+  # dataset = iris
+  # 
+  # datasetAttrsCount = 4
+  # datasetFirstAttrIdx = 1
+  # datasetLastAttrIdx = 4
+  # 
+  # library(mlbench)
+  # data(LetterRecognition)
+  # dataset = LetterRecognition
+  # 
+  # datasetAttrsCount = 16
+  # datasetFirstAttrIdx = 2
+  # datasetLastAttrIdx = 17
+  
+  # min max attr vectors
+  xmin <- vector("numeric", datasetAttrsCount)
+  xmax <- vector("numeric", datasetAttrsCount)
+  
+  for(i in datasetFirstAttrIdx:datasetLastAttrIdx){
+    xmin[i+1-datasetFirstAttrIdx] <- min(dataset[i])
+    xmax[i+1-datasetFirstAttrIdx] <- max(dataset[i])
   }
   
-  population <- centers_init(popSize)
+  # parallel settings
+  if(parallel == TRUE){
+    registerDoParallel(cores)
+  }
+  
+  population <- initCenters(popSize)
+  maxPopSize <- popSize
   runs <- 0
   bestSol <- 0
   bestFitVal <- 0
@@ -49,14 +79,15 @@ ga <- function(popSize = 1000, # population size
       stime <- system.time({
   
         fitness <- foreach (j=0:popSize, .combine=c) %dopar% {
-          fitness_fun(population[j])
+          fitnessFun(population[j])
         }
       })
       
       print(stime[3])
     } else {
       fitness <- foreach (j=0:popSize, .combine=c) %do% {
-        fitness_fun(population[j])
+        fitnessFun(population[j])
+      }
     }
     print(fitness)
     
@@ -75,7 +106,7 @@ ga <- function(popSize = 1000, # population size
     }
     
     # selection
-    newPopulation <- selection(population, fitness)
+    newPopulation <- selection(population, fitness, maxPopSize)
     newPopSize <- length(newPopulation)
     
     # crossover
@@ -88,10 +119,15 @@ ga <- function(popSize = 1000, # population size
         # choosing parents
         parents <- c(population[mating[i,1]], population[mating[i,2]])
         Crossover <- crossover(parents)
-        # adding child to new population
-        newPopulation.append(Crossover)
+        # adding children to new population
+        newPopulation.append(Crossover[1])
+        newPopulation.append(Crossover[2])
       }
     }
+    
+    
+    Mmin <- 1 / max(fitness)
+    Mmax <- 1 / min(fitness)
     
     # update new population size after crossover
     newPopSize <- length(newPopulation)
@@ -100,7 +136,7 @@ ga <- function(popSize = 1000, # population size
       # mutation with given probability pcrossover
       if(pmutation > runif(1)){
         # mutating
-        newPopulation[i] <- mutation(newPopulation[i])
+        newPopulation[i] <- mutation(newPopulation[i], Mmin, Mmax, xmin, xmax)
       }
     }
     
@@ -108,4 +144,5 @@ ga <- function(popSize = 1000, # population size
     population <- newPopulation
     popSize <- length(newPopulation)
   }
+    
 }

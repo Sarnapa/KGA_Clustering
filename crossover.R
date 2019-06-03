@@ -1,3 +1,12 @@
-crossover <- function(object, alpha = 0.2, eps = gaControl(object@type)@eps, ...){
-  print("elo")
+crossover <- function(parents){
+  p1 <- parents[1]
+  p2 <- parents[2]
+  
+  len <- length(p1)
+  
+  crossoverPoint = sample(1:(len-1),1)
+  tmp <- p1[crossoverPoint:len]
+  p1[crossoverPoint:len] <- p2[crossoverPoint:len]
+  p2[crossoverPoint:len] <- tmp
+  res <- c(p1, p2)
 }
