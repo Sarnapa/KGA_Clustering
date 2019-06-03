@@ -3,23 +3,29 @@ library(mlbench)
 source("datasets.R")
 
 kMeans <- function(dataset, centers) {
-
   clusters <- NULL
-  if (dataset == datasetEnum()$IRIS) {
-    data(iris)
-    print(summary(iris))
-    
-    clusters <- kmeans(iris[,0:3], 3)
+  datasetId = dataset$id
+  datasetAttrsCount = dataset$attrsCount
+  datasetFirstAttrIdx = dataset$firstAttrIdx
+  datasetLastAttrIdx = dataset$lastAttrIdx
+  
+  if (datasetId == datasets()$IRIS$id) {
+    if(!exists("iris"))
+      data(iris)
+    #print(summary(iris))
+
+    clusters <- kmeans(x = iris[,datasetFirstAttrIdx:datasetLastAttrIdx], centers = centers, iter.max = 1)
   }
-  else if (dataset == datasetEnum()$LETTER_RECOGNITION) { 
-    data(LetterRecognition)
-    print(summary(LetterRecognition))
-    
-    clusters <- kmeans(LetterRecognition[,2:17], 26)
+  else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
+    if(!exists("LetterRecognition"))
+      data(LetterRecognition)
+    #print(summary(LetterRecognition))
+
+    clusters <- kmeans(LetterRecognition[,datasetFirstAttrIdx:datasetLastAttrIdx], centers = centers, iter.max = 1)
   }
   
   if (!is.null(clusters))
   {
-    str(clusters)
+    clusters$centers
   }
 }
