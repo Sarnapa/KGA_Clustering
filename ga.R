@@ -13,52 +13,35 @@ ga <- function(dataset,
                pCrossover = 0.8, # crossover probability
                pMutation = 0.1, # mutation probability
                maxIter = 100,  # max ga iterations number
-               run = maxIter, # max number of generations without fitness function improvement
+               run = 100, # max number of generations without fitness function improvement
                parallel = TRUE,
                cores = 4) {
   
-  # passing dataset not working
+  # dataset settings
+  data <- NULL
+  datasetId = dataset$id
+  datasetAttrsCount = dataset$attrsCount
+  datasetFirstAttrIdx = dataset$firstAttrIdx
+  datasetLastAttrIdx = dataset$lastAttrIdx
   
-  # TMPvec
-  # dataset <- datasets()$IRIS
-  # 
-  # # dataset settings
-  # datasetId = dataset$id
-  # datasetAttrsCount = dataset$attrsCount
-  # datasetFirstAttrIdx = dataset$firstAttrIdx
-  # datasetLastAttrIdx = dataset$lastAttrIdx
-  # 
-  # if (datasetId == datasets()$IRIS$id) {
-  #   if(!exists("iris"))
-  #     data(iris)
-  # }
-  # else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
-  #   if(!exists("LetterRecognition"))
-  #     data(LetterRecognition)
-  # }
-  
-  # for testing
-  # dataset = iris
-  # 
-  # datasetAttrsCount = 4
-  # datasetFirstAttrIdx = 1
-  # datasetLastAttrIdx = 4
-  # 
-  # library(mlbench)
-  # data(LetterRecognition)
-  # dataset = LetterRecognition
-  # 
-  # datasetAttrsCount = 16
-  # datasetFirstAttrIdx = 2
-  # datasetLastAttrIdx = 17
+  if (datasetId == datasets()$IRIS$id) {
+    if(!exists("iris"))
+      data(iris)
+    data <- iris
+  }
+  else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
+    if(!exists("LetterRecognition"))
+      data(LetterRecognition)
+    data <- LetterRecognition
+  }
   
   # min max attr vectors
   xmin <- vector("numeric", datasetAttrsCount)
   xmax <- vector("numeric", datasetAttrsCount)
   
   for(i in datasetFirstAttrIdx:datasetLastAttrIdx) {
-    xmin[i+1-datasetFirstAttrIdx] <- min(dataset[i])
-    xmax[i+1-datasetFirstAttrIdx] <- max(dataset[i])
+    xmin[i+1-datasetFirstAttrIdx] <- min(data[, i])
+    xmax[i+1-datasetFirstAttrIdx] <- max(data[, i])
   }
   
   # parallel settings
@@ -79,14 +62,14 @@ ga <- function(dataset,
       stime <- system.time( {
   
         fitness <- foreach (j=0:popSize, .combine=c) %dopar% {
-          fitnessFun(population[j])
+          fitnessFun(dataset, population[j])
         }
       })
       
       print(stime[3])
     } else {
       fitness <- foreach (j=0:popSize, .combine=c) %do% {
-        fitnessFun(population[j])
+        fitnessFun(dataset, population[j])
       }
     }
     print(fitness)

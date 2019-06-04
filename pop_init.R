@@ -13,6 +13,7 @@ initPop <- function(dataset, popSize, maxCentersCount) {
 }
 
 initIndividual <- function(dataset, centersCount) {
+  data <- NULL
   datasetId = dataset$id
   datasetAttrsCount = dataset$attrsCount
   datasetExamplesCount = dataset$examplesCount
@@ -27,25 +28,19 @@ initIndividual <- function(dataset, centersCount) {
   if (datasetId == datasets()$IRIS$id) {
     if(!exists("iris"))
       data(iris)
-
-    for(i in 1:centersCount) {
-      idx <- datasetFirstAttrIdx
-      for(j in 1:datasetAttrsCount) {
-        centers[i, j] = runif(1, min = min(iris[, idx]), max = max(iris[, idx]))
-        idx <- idx + 1
-      }
-    }
+    data <- iris
   }
   else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
     if(!exists("LetterRecognition"))
       data(LetterRecognition)
-    
-    for(i in 1:centersCount) {
-      idx <- datasetFirstAttrIdx
-      for(j in 1:datasetAttrsCount) {
-        centers[i, j] = round(runif(1, min = min(LetterRecognition[, idx]), max = max(LetterRecognition[, idx])))
-        idx <- idx + 1 
-      }
+    data <- LetterRecognition
+  }
+  
+  for(i in 1:centersCount) {
+    idx <- datasetFirstAttrIdx
+    for(j in 1:datasetAttrsCount) {
+      centers[i, j] = runif(1, min = min(data[, idx]), max = max(data[, idx]))
+      idx <- idx + 1
     }
   }
   

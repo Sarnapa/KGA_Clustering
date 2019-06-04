@@ -1,4 +1,8 @@
+source("metrics.R")
+
 fitnessFun <- function(dataset, solution) {
-  rating <- 0
-  return(rating)
+  clusteringMetrics <- getClusteringMetrics(dataset, solution)
+  rating <- 1 / clusteringMetrics
+  
+  rating
 }
