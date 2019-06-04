@@ -2,8 +2,11 @@ library(mlbench)
 
 source("datasets.R")
 
-kMeans <- function(dataset, centers) {
+kMeans <- function(dataset, 
+                   centers,
+                   maxIter = 1) {
   clusters <- NULL
+  data <- NULL
   datasetId = dataset$id
   datasetAttrsCount = dataset$attrsCount
   datasetFirstAttrIdx = dataset$firstAttrIdx
@@ -12,17 +15,15 @@ kMeans <- function(dataset, centers) {
   if (datasetId == datasets()$IRIS$id) {
     if(!exists("iris"))
       data(iris)
-    #print(summary(iris))
-
-    clusters <- kmeans(x = iris[,datasetFirstAttrIdx:datasetLastAttrIdx], centers = centers, iter.max = 1)
+    data <- iris
   }
   else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
     if(!exists("LetterRecognition"))
       data(LetterRecognition)
-    #print(summary(LetterRecognition))
-
-    clusters <- kmeans(LetterRecognition[,datasetFirstAttrIdx:datasetLastAttrIdx], centers = centers, iter.max = 1)
+    data <- LetterRecognition
   }
+  
+  clusters <- kmeans(x = data[,datasetFirstAttrIdx:datasetLastAttrIdx], centers = centers, iter.max = maxIter)
   
   if (!is.null(clusters))
   {

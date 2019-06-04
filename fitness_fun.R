@@ -1,4 +1,4 @@
-fitnessFun <- function(solution){
+fitnessFun <- function(dataset, solution) {
   rating <- 0
   return(rating)
 }
