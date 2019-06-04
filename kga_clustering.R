@@ -17,7 +17,7 @@ GA <- ga(dataset = currentDataset,
          maxIter = 1000,
          run = 50,
          pMutation = 0.5,
-         parallel = FALSE
+         parallel = TRUE
 )
 
 population <- GA$population

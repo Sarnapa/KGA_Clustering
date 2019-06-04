@@ -129,7 +129,8 @@ ga <- function(dataset,
     for(i in seq_len(newPopSize)) {
       # mutation with given probability pcrossover
       if(pMutation > runif(1, 0, 1)) {
-        mutation(newPopulation[[i]], xmin, xmax, datasetExamplesCount, datasetIsInteger)
+        newPopulation[[i]] <- mutation(newPopulation[[i]], xmin, xmax, 
+                                       datasetExamplesCount, datasetIsInteger)
       }
     }
     

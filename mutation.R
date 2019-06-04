@@ -51,4 +51,6 @@ mutation <- function(solution, xmin, xmax, limitCentersCount, isInteger){
   else if (newCentersCount < oldCentersCount) {
     solution <- solution[-(newCentersCount + 1):-oldCentersCount, ]
   }
+  
+  solution
 }
