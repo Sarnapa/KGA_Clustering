@@ -19,4 +19,6 @@ mutation <- function(solution, M, Mmin, Mmax, xmin, xmax){
     }
     solution[mutIdx,i] <- xi
   }
+  
+  solution
 }
