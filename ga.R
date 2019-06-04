@@ -23,6 +23,8 @@ ga <- function(dataset,
   datasetAttrsCount = dataset$attrsCount
   datasetFirstAttrIdx = dataset$firstAttrIdx
   datasetLastAttrIdx = dataset$lastAttrIdx
+  datasetExamplesCount = dataset$examplesCount
+  datasetIsInteger = dataset$isInteger
   
   if (datasetId == datasets()$IRIS$id) {
     if(!exists("iris"))
@@ -73,8 +75,6 @@ ga <- function(dataset,
         fitnessFun(dataset, population[[j]])
       }
     }
-    print("Current fitness function values:")
-    print(fitness)
     
     # check end conditions
     newBestFitVal <- max(fitness)
@@ -95,9 +95,13 @@ ga <- function(dataset,
     print("Selection operator processing...")
     # selection
     selectionRes <- selection(population, fitness, maxPopSize)
-    newPopulation <- selectionRes$newPopulation
+    population <- selectionRes$newPopulation
+    newPopulation <- population
     newPopSize <- length(newPopulation)
     newFitness <- selectionRes$fitness
+    
+    print("Current fitness function values:")
+    print(newFitness)
 
     print("Crossover operator processing...")
     # crossover
@@ -116,9 +120,6 @@ ga <- function(dataset,
         newPopulation[[newPopulationSize + 2]] <- Crossover[[2]]
       }
     }
-
-    Mmin <- 1 / max(fitness)
-    Mmax <- 1 / min(fitness)
     
     # update new population size after operations
     # newPopSize <- length(newPopulation)
@@ -127,18 +128,16 @@ ga <- function(dataset,
     # mutation (only on parents)
     for(i in seq_len(newPopSize)) {
       # mutation with given probability pcrossover
-      if(pMutation > runif(1)) {
-        # mutating
-        M = 1 / newFitness[i]
-        mutation(newPopulation[[i]], M, Mmin, Mmax, xmin, xmax)
+      if(pMutation > runif(1, 0, 1)) {
+        mutation(newPopulation[[i]], xmin, xmax, datasetExamplesCount, datasetIsInteger)
       }
     }
     
     print("Created new population")
     # update population
-    population <- newPopulation
-    popSize <- length(newPopulation)
+    population <- c(population, newPopulation)
+    popSize <- length(population)
   }
   
-  population
+  list(population = population, bestSol = bestSol)
 }

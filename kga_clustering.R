@@ -13,8 +13,16 @@ currentMaxCentersCount = 150
 
 GA <- ga(dataset = currentDataset,
          #maxCentersCount = currentMaxCentersCount,
-         popSize = 2,
+         popSize = 5,
          maxIter = 1000,
          run = 50,
+         pMutation = 0.5,
          parallel = FALSE
 )
+
+population <- GA$population
+bestSol <- GA$bestSol
+
+print(sprintf("Best solution - clusters count: %d", nrow(bestSol)))
+print("Best solution - centers:")
+print(bestSol)

@@ -1,22 +1,54 @@
-mutation <- function(solution, M, Mmin, Mmax, xmin, xmax){
+mutation <- function(solution, xmin, xmax, limitCentersCount, isInteger){
   
-  if(Mmax > M){
-    R <- (M - Mmin) / (Mmax - Mmin)
-  } else if (Mmin == Mmax){
-    R <- 1
+  newCentersCount <- floor(runif(1, 1, (limitCentersCount + 1)))
+  oldCentersCount <- nrow(solution)
+  attrsCount <- ncol(solution)
+  lowerCount <- 0
+  greaterCount <- 0
+  
+  if (newCentersCount >= oldCentersCount)  {
+    lowerCount = oldCentersCount
+  }
+  else {
+    lowerCount = newCentersCount
   }
   
-  delta <- runif(1, -R, R)
-  
-  mutIdx = sample(1:length(solution),1)
-  # mutate each attribute
-  for(i in 1:(length(solution[mutIdx]))){
-    xi <- solution[mutIdx, i]
-    if(delta >= 0){
-      xi <- xi + delta * (xmax - xi)
-    } else {
-      xi <- xi + delta * (xi - xmin)
+  for(i in 1:lowerCount) {
+    for(j in 1:attrsCount)
+    {
+      xi <- solution[i, j]
+      delta <- runif(1, -1, 1)
+      
+      if(delta >= 0) {
+        xi <- xi + delta * (xmax[j] - xi)
+      } else {
+        xi <- xi + delta * (xi - xmin[j])
+      }
+      if (isInteger) {
+        solution[i, j] <- round(xi)
+      }
+      else {
+        solution[i, j] <- xi
+      }
     }
-    solution[mutIdx, i] <- xi
+  }
+  
+  if (newCentersCount > oldCentersCount) {
+    for (i in (oldCentersCount + 1):newCentersCount) {
+      newCentres <- vector("numeric", attrsCount)
+      for (j in 1:attrsCount)
+      {
+        if (isInteger) {
+          newCentres[j] <- round(runif(1, xmin[j], xmax[j])) 
+        }
+        else {
+          newCentres[j] <- runif(1, xmin[j], xmax[j])
+        }
+      }
+      solution <- rbind(solution, newCentres)
+    }
+  }
+  else if (newCentersCount < oldCentersCount) {
+    solution <- solution[-(newCentersCount + 1):-oldCentersCount, ]
   }
 }
