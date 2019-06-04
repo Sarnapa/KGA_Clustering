@@ -89,7 +89,9 @@ ga <- function(dataset,
     }
     
     # selection
-    newPopulation <- selection(population, fitness, maxPopSize)
+    Selection <- selection(population, fitness, maxPopSize)
+    newPopulation <- Selection[1]
+    newFitness <- Selection[2]
     newPopSize <- length(newPopulation)
     
     # crossover
@@ -100,7 +102,7 @@ ga <- function(dataset,
       # crossover with given probability pcrossover
       if(pcrossover > runif(1)) {
         # choosing parents
-        parents <- c(population[mating[i,1]], population[mating[i,2]])
+        parents <- c(newPopulation[mating[i,1]], newPopulation[mating[i,2]])
         Crossover <- crossover(parents)
         # adding children to new population
         newPopulation.append(Crossover[1])
@@ -112,14 +114,16 @@ ga <- function(dataset,
     Mmin <- 1 / max(fitness)
     Mmax <- 1 / min(fitness)
     
-    # update new population size after crossover
-    newPopSize <- length(newPopulation)
-    # mutation
+    # update new population size after operations
+    # newPopSize <- length(newPopulation)
+    
+    # mutation (only on parents)
     for(i in seq_len(newPopSize)) {
       # mutation with given probability pcrossover
       if(pmutation > runif(1)) {
         # mutating
-        newPopulation[i] <- mutation(newPopulation[i], Mmin, Mmax, xmin, xmax)
+        M = 1 / newFitness[i]
+        newPopulation[i] <- mutation(newPopulation[i], M, Mmin, Mmax, xmin, xmax)
       }
     }
     

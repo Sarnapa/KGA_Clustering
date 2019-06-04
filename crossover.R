@@ -8,5 +8,5 @@ crossover <- function(parents){
   tmp <- p1[crossoverPoint:len]
   p1[crossoverPoint:len] <- p2[crossoverPoint:len]
   p2[crossoverPoint:len] <- tmp
-  res <- c(p1, p2)
+  list(p1, p2)
 }
