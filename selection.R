@@ -1,8 +1,8 @@
 selection <- function(population, fitness, n){
   order <- order(fitness)
   fitness <- fitness[order]
-  population[order,]
+  population[order]
   fitness <- fitness[1:n]
   population <- population[1:n]
-  list(population, fitness)
+  list(newPopulation = population, fitness = fitness)
 }

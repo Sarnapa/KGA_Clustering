@@ -20,11 +20,12 @@ getClusteringMetrics <- function(dataset, centers) {
       data(LetterRecognition)
     data <- LetterRecognition
   }
-  
+
+  centersCount <- nrow(centers)
+    
   for(i in 1:datasetExamplesCount)
   {
     centerDist <- -1
-    centersCount <- nrow(centers)
 
     for(j in 1:centersCount) {
       center <- centers[j,]

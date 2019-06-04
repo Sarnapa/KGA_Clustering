@@ -13,7 +13,8 @@ currentMaxCentersCount = 150
 
 GA <- ga(dataset = currentDataset,
          #maxCentersCount = currentMaxCentersCount,
-         popSize = 50,
+         popSize = 2,
          maxIter = 1000,
          run = 50,
+         parallel = FALSE
 )
