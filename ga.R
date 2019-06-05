@@ -6,9 +6,11 @@ source("pop_init.R")
 source("selection.R")
 source("mutation.R")
 source("crossover.R")
+source("metrics.R")
 
 ga <- function(dataset,
                maxCentersCount = -1,
+               palfa = 1.0, # rate associated with g factor
                popSize = 100, # population size
                pCrossover = 0.8, # crossover probability
                pMutation = 0.1, # mutation probability
@@ -43,10 +45,15 @@ ga <- function(dataset,
   
   # min max attr vectors
   xmin <- vector("numeric", datasetAttrsCount)
+  xmean <- vector("numeric", datasetAttrsCount)
   xmax <- vector("numeric", datasetAttrsCount)
+  
+  # get data variance
+  xvar <- getVar(dataset, xmean)
   
   for(i in datasetFirstAttrIdx:datasetLastAttrIdx) {
     xmin[i+1-datasetFirstAttrIdx] <- min(data[, i])
+    xmean[i+1-datasetFirstAttrIdx] <- mean(data[, i])
     xmax[i+1-datasetFirstAttrIdx] <- max(data[, i])
   }
   
@@ -68,7 +75,7 @@ ga <- function(dataset,
       stime <- system.time( {
         fitness <- foreach (j=1:popSize, .combine=c) %dopar% {
           source("fitness_fun.R")
-          fitnessFun(dataset, population[[j]])
+          fitnessFun(dataset, population[[j]], palfa, xvar)
         }
       })
       
@@ -76,7 +83,7 @@ ga <- function(dataset,
     } else {
         fitness <- foreach (j=1:popSize, .combine=c) %do% {
         source("fitness_fun.R")
-        fitnessFun(dataset, population[[j]])
+        fitnessFun(dataset, population[[j]], palfa, xvar)
       }
     }
     
