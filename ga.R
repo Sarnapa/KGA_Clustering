@@ -26,6 +26,10 @@ ga <- function(dataset,
   datasetExamplesCount = dataset$examplesCount
   datasetIsInteger = dataset$isInteger
   
+  if (maxCentersCount == -1) {
+    maxCentersCount = datasetExamplesCount
+  }
+  
   if (datasetId == datasets()$IRIS$id) {
     if(!exists("iris"))
       data(iris)
@@ -68,7 +72,7 @@ ga <- function(dataset,
         }
       })
       
-      print(stime[3])
+      print(sprintf("Fitness function execution time: %f", stime[3]))
     } else {
         fitness <- foreach (j=1:popSize, .combine=c) %do% {
         source("fitness_fun.R")
@@ -95,24 +99,24 @@ ga <- function(dataset,
     print("Selection operator processing...")
     # selection
     selectionRes <- selection(population, fitness, maxPopSize)
-    population <- selectionRes$newPopulation
-    newPopulation <- population
-    newPopSize <- length(newPopulation)
-    newFitness <- selectionRes$fitness
-    
+    population <- selectionRes$population
+    orderedFitness <- selectionRes$fitness
+
     print("Current fitness function values:")
-    print(newFitness)
+    print(orderedFitness)
+    
+    newPopulation <- list()
 
     print("Crossover operator processing...")
     # crossover
-    nmating <- floor(newPopSize/2)
+    nmating <- floor(length(population)/2)
     # mating matrix
     mating <- matrix(sample(1:(2*nmating), size = (2*nmating)), ncol = 2)
     for(i in seq_len(nmating)) {
       # crossover with given probability pcrossover
       if(pCrossover > runif(1)) {
         # choosing parents
-        parents <- c(newPopulation[mating[i, 1]], newPopulation[mating[i, 2]])
+        parents <- c(population[mating[i, 1]], population[mating[i, 2]])
         Crossover <- crossover(parents)
         # adding children to new population
         newPopulationSize <- length(newPopulation)
@@ -122,7 +126,7 @@ ga <- function(dataset,
     }
     
     # update new population size after operations
-    # newPopSize <- length(newPopulation)
+    newPopSize <- length(newPopulation)
     
     print("Mutation operator processing...")
     # mutation (only on parents)
@@ -130,7 +134,7 @@ ga <- function(dataset,
       # mutation with given probability pcrossover
       if(pMutation > runif(1, 0, 1)) {
         newPopulation[[i]] <- mutation(newPopulation[[i]], xmin, xmax, 
-                                       datasetExamplesCount, datasetIsInteger)
+                                       maxCentersCount, datasetIsInteger)
       }
     }
     

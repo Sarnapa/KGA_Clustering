@@ -28,7 +28,7 @@ getClusteringMetrics <- function(dataset, centers) {
     centerDist <- -1
 
     for(j in 1:centersCount) {
-      center <- centers[j,]
+      center <- centers[j, ,drop = FALSE]
       centerDistTmp <- getMinDistance(data, datasetFirstAttrIdx, datasetAttrsCount, i, center)
       if (centerDist < 0 | centerDistTmp < centerDist) {
         centerDist <- centerDistTmp

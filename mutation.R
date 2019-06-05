@@ -45,11 +45,11 @@ mutation <- function(solution, xmin, xmax, limitCentersCount, isInteger){
           newCentres[j] <- runif(1, xmin[j], xmax[j])
         }
       }
-      solution <- rbind(solution, newCentres)
+      solution <- rbind(solution, setNames(newCentres, names(newCentres)))
     }
   }
   else if (newCentersCount < oldCentersCount) {
-    solution <- solution[-(newCentersCount + 1):-oldCentersCount, ]
+    solution <- solution[-(newCentersCount + 1):-oldCentersCount, , drop=F]
   }
   
   solution
