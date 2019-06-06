@@ -62,6 +62,9 @@ getGFactor <- function(dataset, centers, alfa, xvar) {
     dis <- getDis(centersDists, dmax, dmin)
   }
   
+  print(scat)
+  print(dis)
+  
   g <- (alfa * scat) + dis
   
   g
@@ -145,17 +148,16 @@ getScat <- function(clustersVars, xvar) {
   scat
 }
 
+# It isn't necessary to count all values - some are duplicates
 getCentersDists <- function(centers) {
   centersCount <- nrow(centers)
 
   centersDists <- matrix(data = 0L, nrow = centersCount, ncol = centersCount)
   if (centersCount > 1)
   {
-    for (i in 1:centersCount) {
-      for (j in 1:centersCount) {
-        if (i != j) {
+    for (i in 1:(centersCount - 1)) {
+      for (j in (i + 1):centersCount) {
           centersDists[i, j] <- getCentersDistance(centers[i], centers[j])
-        }
       }
     }
   }
@@ -168,16 +170,14 @@ getDmaxDmin <- function(centersDists) {
   dmax <- -1
   dmin <- -1
   
-  for (i in 1:centersCount) {
-    for (j in 1:centersCount) {
-      if (i != j) {
-        val <- centersDists[i, j]
-        if (dmax == -1 | val > dmax) {
-          dmax <- val
-        }
-        if (dmin == -1 | val < dmin) {
-          dmin <- val
-        }
+  for (i in 1:(centersCount - 1)) {
+    for (j in (i + 1):centersCount) {
+      val <- centersDists[i, j]
+      if (dmax == -1 | val > dmax) {
+        dmax <- val
+      }
+      if (dmin == -1 | val < dmin) {
+        dmin <- val
       }
     }
   }
@@ -189,12 +189,10 @@ getDis <- function(centersDists, dmax, dmin) {
   centersCount <- nrow(centersDists)
   outSum <- 0
   
-  for (i in 1:centersCount) {
+  for (i in 1:(centersCount - 1)) {
     inSum <- 0
-    for (j in 1:centersCount) {
-      if (i != j) {
+    for (j in (i + 1):centersCount) {
         inSum <- inSum + centersDists[i, j]
-      }
     }
     outSum <- outSum + (1 / inSum)
   }
