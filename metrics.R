@@ -157,7 +157,9 @@ getCentersDists <- function(centers) {
   {
     for (i in 1:(centersCount - 1)) {
       for (j in (i + 1):centersCount) {
-          centersDists[i, j] <- getCentersDistance(centers[i], centers[j])
+          dist <- getCentersDistance(centers[i], centers[j])
+          centersDists[i, j] <- dist
+          centersDists[j, i] <- dist
       }
     }
   }
@@ -189,10 +191,12 @@ getDis <- function(centersDists, dmax, dmin) {
   centersCount <- nrow(centersDists)
   outSum <- 0
   
-  for (i in 1:(centersCount - 1)) {
+  for (i in 1:centersCount) {
     inSum <- 0
-    for (j in (i + 1):centersCount) {
+    for (j in 1:centersCount) {
+      if (i != j) {
         inSum <- inSum + centersDists[i, j]
+      }
     }
     outSum <- outSum + (1 / inSum)
   }

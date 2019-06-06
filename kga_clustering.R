@@ -6,7 +6,7 @@ source("ga.R")
 currentDataset <- datasets()$IRIS
 currentMaxCentersCount = 5
 
-GA <- ga(dataset = currentDataset, palfa = 10.0,
+GA <- ga(dataset = currentDataset, palfa = 100.0,
       #maxCentersCount = currentMaxCentersCount,
       popSize = 10,
       maxIter = 1000,
