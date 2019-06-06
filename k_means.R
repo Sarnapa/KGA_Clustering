@@ -27,6 +27,6 @@ kMeans <- function(dataset,
   
   if (!is.null(clusters))
   {
-    clusters$centers
+    clusters
   }
 }

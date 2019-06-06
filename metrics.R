@@ -201,3 +201,40 @@ getDis <- function(centersDists, dmax, dmin) {
     
   dis
 }
+
+getClusteringMetrics <- function(dataset, centers) {
+  clusteringMetrics <- 0
+  data <- NULL
+  datasetId = dataset$id
+  datasetAttrsCount = dataset$attrsCount
+  datasetFirstAttrIdx = dataset$firstAttrIdx
+  datasetExamplesCount = dataset$examplesCount
+  
+  if (datasetId == datasets()$IRIS$id) {
+    if(!exists("iris"))
+      data(iris)
+    data <- iris
+  }
+  else if (datasetId == datasets()$LETTER_RECOGNITION$id) {
+    if(!exists("LetterRecognition"))
+      data(LetterRecognition)
+    data <- LetterRecognition
+  }
+  
+  for(i in 1:datasetExamplesCount)
+  {
+    centerDist <- -1
+    centersCount <- nrow(centers)
+    
+    for(j in 1:centersCount) {
+      center <- centers[j,]
+      centerDistTmp <- getDistance(data, datasetFirstAttrIdx, datasetAttrsCount, i, center)
+      if (centerDist < 0 | centerDistTmp < centerDist) {
+        centerDist <- centerDistTmp
+      }
+    }
+    clusteringMetrics <- clusteringMetrics + centerDist
+  }
+  
+  clusteringMetrics
+}
