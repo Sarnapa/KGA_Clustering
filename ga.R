@@ -8,8 +8,9 @@ source("mutation.R")
 source("crossover.R")
 source("metrics.R")
 
-ga <- function(dataset,
-               maxCentersCount = -1,
+# Definiton of genetic algorithm
+ga <- function(dataset, # given dataset info
+               maxCentersCount = -1, # max number of clusters / centers
                palfa = 1.0, # rate associated with g factor
                popSize = 100, # population size
                pCrossover = 0.8, # crossover probability
@@ -19,7 +20,7 @@ ga <- function(dataset,
                parallel = TRUE,
                cores = 4) {
   
-  # dataset settings
+  # Dataset settings
   data <- NULL
   datasetId = dataset$id
   datasetAttrsCount = dataset$attrsCount
@@ -43,31 +44,34 @@ ga <- function(dataset,
     data <- LetterRecognition
   }
   
-  # min max attr vectors
+  # Min max attr vectors
   xmin <- vector("numeric", datasetAttrsCount)
   xmean <- vector("numeric", datasetAttrsCount)
   xmax <- vector("numeric", datasetAttrsCount)
   
-  # get data variance
+  # Get data variance
   xvar <- getVar(dataset, xmean)
   
+  # Data stats preparation
   for(i in datasetFirstAttrIdx:datasetLastAttrIdx) {
     xmin[i+1-datasetFirstAttrIdx] <- min(data[, i])
     xmean[i+1-datasetFirstAttrIdx] <- mean(data[, i])
     xmax[i+1-datasetFirstAttrIdx] <- max(data[, i])
   }
   
-  # parallel settings
+  # Parallel settings
   if(parallel == TRUE) {
     registerDoParallel(cores)
   }
   
+  # Population initialization
   population <- initPop(dataset, popSize, maxCentersCount)
   maxPopSize <- popSize
   runs <- 0
   bestSol <- 0
   bestFitVal <- 0
 
+  # Evaluation process
   for(i in seq_len(maxIter)) {
     print(sprintf("Iteration: %d", i))
     if(parallel)
@@ -87,7 +91,7 @@ ga <- function(dataset,
       }
     }
     
-    # check end conditions
+    # Check end conditions
     newBestFitVal <- max(fitness)
     if(newBestFitVal > bestFitVal) {
       bestFitVal <- newBestFitVal
@@ -103,8 +107,8 @@ ga <- function(dataset,
       break
     }
 
+    # Selection process
     print("Selection operator processing...")
-    # selection
     selectionRes <- selection(population, fitness, maxPopSize)
     population <- selectionRes$population
     orderedFitness <- selectionRes$fitness
@@ -114,31 +118,31 @@ ga <- function(dataset,
     
     newPopulation <- list()
 
+    # Crossover process
     print("Crossover operator processing...")
-    # crossover
     nmating <- floor(length(population)/2)
-    # mating matrix
+    # Mating matrix
     mating <- matrix(sample(1:(2*nmating), size = (2*nmating)), ncol = 2)
     for(i in seq_len(nmating)) {
-      # crossover with given probability pcrossover
+      # Crossover with given probability pcrossover
       if(pCrossover > runif(1)) {
-        # choosing parents
+        # Choosing parents
         parents <- c(population[mating[i, 1]], population[mating[i, 2]])
         Crossover <- crossover(parents)
-        # adding children to new population
+        # Adding children to new population
         newPopulationSize <- length(newPopulation)
         newPopulation[[newPopulationSize + 1]] <- Crossover[[1]]
         newPopulation[[newPopulationSize + 2]] <- Crossover[[2]]
       }
     }
     
-    # update new population size after operations
+    # Update new population size after operations
     newPopSize <- length(newPopulation)
-    
+
+    # Mutation process (only on parents)
     print("Mutation operator processing...")
-    # mutation (only on parents)
     for(i in seq_len(newPopSize)) {
-      # mutation with given probability pcrossover
+      # Mutation with given probability pcrossover
       if(pMutation > runif(1, 0, 1)) {
         newPopulation[[i]] <- mutation(newPopulation[[i]], xmin, xmax, 
                                        maxCentersCount, datasetIsInteger)
@@ -146,7 +150,7 @@ ga <- function(dataset,
     }
     
     print("Created new population")
-    # update population
+    # Update population
     population <- c(population, newPopulation)
     popSize <- length(population)
   }

@@ -2,6 +2,7 @@ library(mlbench)
 
 source("datasets.R")
 
+# Built-in kMeans method usage
 kMeans <- function(dataset, 
                    centers,
                    maxIter = 1) {

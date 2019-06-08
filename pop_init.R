@@ -1,3 +1,4 @@
+# Population initializaion
 initPop <- function(dataset, popSize, maxCentersCount) {
   pop <- list()
   if (missing(maxCentersCount) | maxCentersCount < 0) {
@@ -12,6 +13,7 @@ initPop <- function(dataset, popSize, maxCentersCount) {
   pop
 }
 
+# Single individual initialization
 initIndividual <- function(dataset, centersCount) {
   data <- NULL
   datasetId = dataset$id

@@ -1,3 +1,4 @@
+# Mutation operator
 mutation <- function(solution, xmin, xmax, limitCentersCount, isInteger){
   
   newCentersCount <- floor(runif(1, 1, (limitCentersCount + 1)))

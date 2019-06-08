@@ -1,3 +1,4 @@
+# Selection process
 selection <- function(population, fitness, n){
   order <- order(fitness, decreasing = TRUE)
   fitness <- fitness[order]

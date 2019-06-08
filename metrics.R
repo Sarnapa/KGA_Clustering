@@ -2,6 +2,7 @@ library(mlbench)
 
 source("datasets.R")
 
+# Calculate G factor for fitness function
 getGFactor <- function(dataset, centers, alfa, xvar) {
   g <- 0
   data <- NULL
@@ -29,6 +30,7 @@ getGFactor <- function(dataset, centers, alfa, xvar) {
     data <- LetterRecognition
   }
   
+  # Examples distances to specific cluster center calculation
   for(i in 1:datasetExamplesCount)
   {
     centerIdx <- -1
@@ -46,12 +48,15 @@ getGFactor <- function(dataset, centers, alfa, xvar) {
     clustersExamples[[centerIdx]][[clusterExamplesCount + 1]] <- list(i, centerDist)
   }
   
+  # Clusters variances calculation
   for (i in 1:clustersCount) {
     clustersVars[[i]] <- getClusterVar(clustersExamples[[i]])
   }
   
+  # Scat factor calculation
   scat <- getScat(clustersVars, xvar)
 
+  # Dis factor calculaction
   dis <- 0
   if (clustersCount > 1)
   {
@@ -65,11 +70,13 @@ getGFactor <- function(dataset, centers, alfa, xvar) {
   print(scat)
   print(dis)
   
+  # Final result
   g <- (alfa * scat) + dis
   
   g
 }
 
+# Distance to given point calculation
 getDistance <- function(dataset, datasetFirstAttrIdx, datasetAttrsCount, exampleIdx, x) {
   centerDist <- 0
   idx <- datasetFirstAttrIdx
@@ -82,6 +89,7 @@ getDistance <- function(dataset, datasetFirstAttrIdx, datasetAttrsCount, example
   centerDist
 }
 
+# To calculate distances between given centers
 getCentersDistance <- function(center1, center2) {
   centersDist <- 0
   attrsCount <- length(center1)
@@ -93,6 +101,7 @@ getCentersDistance <- function(center1, center2) {
   centersDist
 }
 
+# Cluster variance calculation
 getClusterVar <- function(clusterExamples) {
   sum <- 0
   var <- 0
@@ -108,6 +117,7 @@ getClusterVar <- function(clusterExamples) {
   var
 }
 
+# Variance of given dataset calculation
 getVar <- function(dataset, xmean) {
   datasetId = dataset$id
   datasetAttrsCount = dataset$attrsCount
@@ -136,6 +146,7 @@ getVar <- function(dataset, xmean) {
   var
 }
 
+# This factor describes how examples are similar in specific cluster
 getScat <- function(clustersVars, xvar) {
   sum <- 0
   clustersCount <- length(clustersVars)
@@ -167,6 +178,7 @@ getCentersDists <- function(centers) {
   centersDists
 }
 
+# Important values for Dis factor calculation
 getDmaxDmin <- function(centersDists) {
   centersCount <- nrow(centersDists)
   dmax <- -1
@@ -187,6 +199,7 @@ getDmaxDmin <- function(centersDists) {
   list(dmax = dmax, dmin = dmin)
 }
 
+# This factor describes how far given clusters are located from themselves 
 getDis <- function(centersDists, dmax, dmin) {
   centersCount <- nrow(centersDists)
   outSum <- 0
@@ -206,6 +219,7 @@ getDis <- function(centersDists, dmax, dmin) {
   dis
 }
 
+# To count standars sum of distances to specific cluster center
 getClusteringMetrics <- function(dataset, centers) {
   clusteringMetrics <- 0
   data <- NULL
